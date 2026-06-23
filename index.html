@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CA Inter Rank Tracker Pro</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+}
+
+.sidebar{
+width:250px;
+position:fixed;
+left:0;
+top:0;
+height:100vh;
+background:#111827;
+padding:20px;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+color:#38bdf8;
+margin-bottom:20px;
+}
+
+.menu div{
+background:#1e293b;
+padding:12px;
+margin-bottom:10px;
+border-radius:10px;
+}
+
+.main{
+margin-left:250px;
+padding:25px;
+}
+
+.hero{
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+padding:25px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+}
+
+.card h1{
+color:#22c55e;
+}
+
+.section{
+margin-top:30px;
+}
+
+input,textarea{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#334155;
+border:none;
+border-radius:10px;
+color:white;
+}
+
+button{
+padding:12px 20px;
+background:#22c55e;
+color:white;
+border:none;
+border-radius:10px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.progress{
+height:18px;
+background:#334155;
+border-radius:20px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.bar{
+height:100%;
+background:#22c55e;
+width:0%;
+}
+
+footer{
+text-align:center;
+padding:30px;
+margin-top:40px;
+color:#cbd5e1;
+}
+
+@media(max-width:900px){
+
+.sidebar{
+position:relative;
+width:100%;
+height:auto;
+}
+
+.main{
+margin-left:0;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">
+🏆 CA Rank Tracker
+</div>
+
+<div class="menu">
+<div>Dashboard</div>
+<div>Subjects</div>
+<div>Study Timer</div>
+<div>Revision</div>
+<div>Mock Tests</div>
+<div>Analytics</div>
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="hero">
+
+<h1>CA Intermediate Sept 2026</h1>
+
+<p>Designed in India with ❤️ by Vinit Bang</p>
+
+<h2 id="countdown">Loading...</h2>
+
+</div>
+
+<div class="dashboard">
+
+<div class="card">
+<h3>Total Hours</h3>
+<h1 id="totalHours">0</h1>
+</div>
+
+<div class="card">
+<h3>Study Streak</h3>
+<h1 id="streak">0</h1>
+</div>
+
+<div class="card">
+<h3>Syllabus</h3>
+<h1 id="syllabusPercent">0%</h1>
+</div>
+
+<div class="card">
+<h3>Mock Average</h3>
+<h1 id="mockAverage">0</h1>
+</div>
+
+</div>
+
+<div class="section">
+
+<h2>🔥 Live Study Timer</h2>
+
+<h1 id="timerDisplay">00:00:00</h1>
+
+<button onclick="startTimer()">Start</button>
+<button onclick="pauseTimer()">Pause</button>
+<button onclick="resetTimer()">Reset</button>
+
+</div>
+
+<div class="section">
+
+<h2>📚 Subject Progress</h2>
+
+Accounts
+<input type="number" id="accInput">
+
+<div class="progress">
+<div class="bar" id="accBar"></div>
+</div>
+
+Audit
+<input type="number" id="auditInput">
+
+<div class="progress">
+<div class="bar" id="auditBar"></div>
+</div>
+
+Tax
+<input type="number" id="taxInput">
+
+<div class="progress">
+<div class="bar" id="taxBar"></div>
+</div>
+
+Costing
+<input type="number" id="costInput">
+
+<div class="progress">
+<div class="bar" id="costBar"></div>
+</div>
+
+FM
+<input type="number" id="fmInput">
+
+<div class="progress">
+<div class="bar" id="fmBar"></div>
+</div>
+
+<button onclick="saveSubjects()">
+Save Progress
+</button>
+
+</div>
+
+<div class="section">
+
+<h2>🎯 Daily Goals</h2>
+
+<input
+id="goalInput"
+placeholder="Enter Daily Goal">
+
+<button onclick="addGoal()">
+Add Goal
+</button>
+
+<ul id="goalList"></ul>
+
+</div>
+
+<div class="section">
+
+<h2>📝 Wrong Question Notebook</h2>
+
+<textarea
+id="mistakes"
+rows="8">
+</textarea>
+
+</div>
+
+<footer>
+
+🇮🇳 Designed in India with Love by Vinit Bang
+
+<br><br>
+
+🔒 Privacy Protected | Local Storage
+
+</footer>
+
+</div>
+
+<script>
+
+function updateCountdown(){
+
+const exam=new Date("September 1, 2026");
+
+const today=new Date();
+
+const days=Math.ceil(
+(exam-today)/(1000*60*60*24)
+);
+
+document.getElementById("countdown")
+.innerHTML="⏳ "+days+" Days Remaining";
+
+}
+
+updateCountdown();
+
+let timer;
+let seconds=0;
+
+function startTimer(){
+
+if(timer) return;
+
+timer=setInterval(()=>{
+
+seconds++;
+
+updateTimer();
+
+},1000);
+
+}
+
+function pauseTimer(){
+
+clearInterval(timer);
+
+timer=null;
+
+}
+
+function resetTimer(){
+
+clearInterval(timer);
+
+timer=null;
+
+seconds=0;
+
+updateTimer();
+
+}
+
+function updateTimer(){
+
+let h=Math.floor(seconds/3600);
+let m=Math.floor((seconds%3600)/60);
+let s=seconds%60;
+
+document.getElementById("timerDisplay")
+.innerHTML=
+String(h).padStart(2,'0')+":"+
+String(m).padStart(2,'0')+":"+
+String(s).padStart(2,'0');
+
+}
+
+function addGoal(){
+
+let input=document.getElementById("goalInput");
+
+if(input.value==="") return;
+
+let li=document.createElement("li");
+
+li.innerHTML=
+'<input type="checkbox"> '+input.value;
+
+document.getElementById("goalList")
+.appendChild(li);
+
+localStorage.setItem(
+"goals",
+document.getElementById("goalList").innerHTML
+);
+
+input.value="";
+
+}
+
+window.onload=function(){
+
+if(localStorage.getItem("goals")){
+
+document.getElementById("goalList")
+.innerHTML=
+localStorage.getItem("goals");
+
+}
+
+if(localStorage.getItem("mistakes")){
+
+document.getElementById("mistakes")
+.value=
+localStorage.getItem("mistakes");
+
+}
+
+};
+
+setInterval(()=>{
+
+localStorage.setItem(
+"mistakes",
+document.getElementById("mistakes").value
+);
+
+},2000);
+
+function saveSubjects(){
+
+let acc=document.getElementById("accInput").value||0;
+let audit=document.getElementById("auditInput").value||0;
+let tax=document.getElementById("taxInput").value||0;
+let cost=document.getElementById("costInput").value||0;
+let fm=document.getElementById("fmInput").value||0;
+
+document.getElementById("accBar").style.width=acc+"%";
+document.getElementById("auditBar").style.width=audit+"%";
+document.getElementById("taxBar").style.width=tax+"%";
+document.getElementById("costBar").style.width=cost+"%";
+document.getElementById("fmBar").style.width=fm+"%";
+
+let avg=(+acc + +audit + +tax + +cost + +fm)/5;
+
+document.getElementById("syllabusPercent")
+.innerHTML=Math.round(avg)+"%";
+
+}
+
+</script>
+
+</body>
+</html>
